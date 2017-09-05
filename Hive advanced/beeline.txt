@@ -1,0 +1,9 @@
+hive --service hiveserver2
+
+beeline
+!connect jdbc:hive2://localhost:10000 acadgild
+show tables;
+select * from emp_seq;
+
+
+beeline -u jdbc:hive2://localhost:10000/default -n acadgild

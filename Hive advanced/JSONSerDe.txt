@@ -1,0 +1,45 @@
+--------------------------------------------------------------------------------
+ADDING JAR FOR JsonSerDe
+--------------------------------------------------------------------------------
+
+ADD JAR /usr/local/hive/hcatalog/share/hcatalog/hive-hcatalog-core-0.14.0.jar;
+
+--------------------------------------------------------------------------------
+CREATING TABLE USING JsonSerDe
+--------------------------------------------------------------------------------
+
+CREATE TABLE json_table(name string, id bigint, skills array<string>)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE;
+
+--------------------------------------------------------------------------------
+Sample JSON File
+--------------------------------------------------------------------------------
+
+vi json_file.json
+{"name":"Amit", "id":1, "skills":["Hadoop", "Python"]}
+{"name":"Sumit", "id":2, "skills":["Hadoop", "Hive"]}
+{"name":"Rohit", "id":3, "skills":["Oozie", "Python"]}
+
+--------------------------------------------------------------------------------
+Loading DATA in table
+--------------------------------------------------------------------------------
+
+LOAD DATA LOCAL INPATH '/home/acadgild/hive/json_file.json'
+OVERWRITE INTO TABLE json_table;
+
+--------------------------------------------------------------------------------
+Querying the table
+--------------------------------------------------------------------------------
+
+select * from json_table;
+
+Amit    1       ["Hadoop","Python"]
+Sumit   2       ["Hadoop","Hive"]
+Rohit   3       ["Oozie","Python"]
+
+select skills[0] from json_table;
+
+Hadoop
+Hadoop
+Oozie

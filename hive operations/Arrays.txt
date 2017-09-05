@@ -1,0 +1,78 @@
+vi employee.csv
+101,Amit,HADOOP:HIVE:SPARK:BIG-DATA
+102,Sumit,HIVE:OOZIE:HADOOP:SPARK:STORM
+103,Rohit,KAFKA:CASSANDRA:HBASE
+
+USE itunes_fuse_semantic_app;
+
+CREATE TABLE employee
+(
+id INT,
+name STRING,
+skills ARRAY<STRING>
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+COLLECTION ITEMS TERMINATED BY ':';
+
+LOAD DATA LOCAL INPATH '/root/hive/employee.csv'
+INTO TABLE employee;
+
+------------------------------------------------------------------------------------------------------------------
+Working with Array operators
+------------------------------------------------------------------------------------------------------------------
+
+SELECT 
+size(skills),
+array_contains(skills, 'HADOOP'),
+sort_array(skills),
+concat_ws("|", skills)
+FROM employee;
+
+4	true	["BIG-DATA","HADOOP","HIVE","SPARK"]	HADOOP|HIVE|SPARK|BIG-DATA
+5	true	["HADOOP","HIVE","OOZIE","SPARK","STORM"]	HIVE|OOZIE|HADOOP|SPARK|STORM
+3	false	["CASSANDRA","HBASE","KAFKA"]	KAFKA|CASSANDRA|HBASE
+
+
+------------------------------------------------------------------------------------------------------------------
+Exploding contents of an array
+------------------------------------------------------------------------------------------------------------------
+
+SELECT explode(skills) AS skills FROM employee;
+--AS clause is required as explode() is UDTF, ie. generates output as TABLE.
+
+HADOOP
+HIVE
+SPARK
+BIG-DATA
+HIVE
+OOZIE
+HADOOP
+SPARK
+STORM
+KAFKA
+CASSANDRA
+HBASE
+
+------------------------------------------------------------------------------------------------------------------
+Expanding contents of an array with other columns
+------------------------------------------------------------------------------------------------------------------
+
+SELECT id, name, skill
+FROM employee LATERAL VIEW explode(skills) skill_set 
+AS skill;
+
+101	Amit	HADOOP
+101	Amit	HIVE
+101	Amit	SPARK
+101	Amit	BIG-DATA
+102	Sumit	HIVE
+102	Sumit	OOZIE
+102	Sumit	HADOOP
+102	Sumit	SPARK
+102	Sumit	STORM
+103	Rohit	KAFKA
+103	Rohit	CASSANDRA
+103	Rohit	HBASE
+
+Here skill_set is the table which contains single column with alias skill.

@@ -1,0 +1,38 @@
+------------------------------------------------------------------------------------------------------------------------------
+Inner Join
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM buck_users u INNER JOIN buck_locations l
+ON u.id = l.id;
+
+------------------------------------------------------------------------------------------------------------------------------
+Left Outer Join
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM buck_users u LEFT OUTER JOIN buck_locations l
+ON u.id = l.id;
+
+------------------------------------------------------------------------------------------------------------------------------
+Right Outer Join
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM buck_users u RIGHT OUTER JOIN buck_locations l
+ON u.id = l.id;
+
+------------------------------------------------------------------------------------------------------------------------------
+Full Outer Join
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM buck_users u FULL OUTER JOIN buck_locations l
+ON u.id = l.id;
+
+------------------------------------------------------------------------------------------------------------------------------
+Cartesian Cross Product Join (Less Used)
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT * FROM buck_users u JOIN buck_locations l
+ON u.id = l.id;
+
+Cartesian products create a lot of data.
+Unlike other join types, Cartesian products are not executed in parallel, and they are not optimized in any way using MapReduce.
+When the property hive.mapred.mode is set to strict, Hive prevents users from inadvertently issuing a Cartesian product query.

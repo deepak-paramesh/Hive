@@ -1,0 +1,7 @@
+############# Use Hortonworks VM ########################################
+SET mapred.reduce.tasks=2;
+SELECT * FROM users DISTRIBUTE BY unit SORT BY name ASC;
+
+
+SELECT * FROM users DISTRIBUTE BY unit SORT BY name ASC;
+SELECT * FROM users CLUSTER BY unit;

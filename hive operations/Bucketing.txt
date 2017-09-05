@@ -1,0 +1,74 @@
+-bash-4.1$ vi users.txt
+1	Amit	100	DNA
+2	Sumit	200	DNA
+3	Yadav	300	DNA
+4	Sunil	500	FCS
+5	Kranti	100	FCS
+6	Mahoor	200	FCS
+8	Chandra	500	DNA
+
+-bash-4.1$ vi locations.txt
+1	UP
+2	BIHAR
+3	MP
+4	AP
+5	MAHARASHTRA
+6	GOA
+7	JHARKHAND
+
+USE default;
+
+CREATE TABLE users
+(
+id INT,
+name STRING,
+salary INT,
+unit STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t';
+
+CREATE TABLE locations
+(
+id INT,
+location STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t';
+
+LOAD DATA LOCAL INPATH '/root/hive/users.txt'
+INTO TABLE users;
+
+LOAD DATA LOCAL INPATH '/root/hive/locations.txt'
+INTO TABLE locations;
+
+CREATE TABLE buck_users
+(
+id INT,
+name STRING,
+salary INT,
+unit STRING
+)
+CLUSTERED BY (id)
+SORTED BY (id)
+INTO 2 BUCKETS;
+
+CREATE TABLE buck_locations
+(
+id INT,
+location STRING
+)
+CLUSTERED BY (id)
+SORTED BY (id)
+INTO 2 BUCKETS;
+
+SET hive.enforce.bucketing=true;
+
+INSERT OVERWRITE TABLE buck_users
+SELECT * FROM users;
+
+INSERT OVERWRITE TABLE buck_locations
+SELECT * FROM locations;
+
+--View the number of files created at the table location.
+--It should be two.

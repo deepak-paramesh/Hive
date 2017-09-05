@@ -1,0 +1,140 @@
+---------------------------
+Creating regular text table
+---------------------------
+create table text_table
+(
+c1 int,
+c2 int,
+c3 int,
+c4 int
+)
+row format delimited
+fields terminated by '|';
+
+---------------------------
+Loading into text table
+---------------------------
+
+load data local inpath '/root/hive/datasets_for_fileformats/ratings.dat'
+into table text_table;
+
+---------------------------
+Creating SequenceFile table
+---------------------------
+
+create table seq_table
+(
+c1 int,
+c2 int,
+c3 int,
+c4 int
+)
+stored as SEQUENCEFILE;
+
+---------------------------
+Creating RC Format table
+---------------------------
+
+create table rc_table
+(
+c1 int,
+c2 int,
+c3 int,
+c4 int
+)
+stored as RCFILE;
+
+---------------------------
+Creating Parquet File table
+---------------------------
+
+create table prq_table
+(
+c1 int,
+c2 int,
+c3 int,
+c4 int
+)
+stored as PARQUET;
+
+---------------------------
+Creating ORC Format table
+---------------------------
+
+create table orc_table
+(
+c1 int,
+c2 int,
+c3 int,
+c4 int
+)
+stored as ORC;
+
+----------------------------------------
+Loading All the tables in a single pass
+----------------------------------------
+
+FROM text_table
+INSERT OVERWRITE TABLE seq_table SELECT *
+INSERT OVERWRITE TABLE rc_table SELECT *
+INSERT OVERWRITE TABLE prq_table SELECT *
+INSERT OVERWRITE TABLE orc_table SELECT *;
+
+----------------------------------------
+Comparing sizes of loaded tables
+----------------------------------------
+
+describe formatted orc_table;
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/text_table;
+-rw-r--r--   1 root hdfs    4135847 2016-08-25 11:13 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/orc_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/orc_table;
+-rw-r--r--   1 root hdfs   21593504 2016-08-25 11:12 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/text_table/ratings.dat
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/seq_table;
+-rw-r--r--   1 root hdfs   33928859 2016-08-25 11:13 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/seq_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/rc_table;
+-rw-r--r--   1 root hdfs   11992620 2016-08-25 11:13 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/rc_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/prq_table;
+-rw-r--r--   1 root hdfs    5941753 2016-08-25 11:13 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/prq_table/000000_0
+
+
+----------------------------------------
+Enablig Compression
+----------------------------------------
+
+Enabling compression provides performance gains in most cases and is supported for RCFile and SequenceFile tables.
+For example, to enable Snappy compression, you would specify the following additional settings when loading data through the Hive shell.
+
+SET hive.exec.comprxess.output=true;
+SET mapred.max.split.size=256000000;
+SET mapred.output.compression.type=BLOCK; -- block compression for sequence file
+SET mapred.output.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
+
+FROM text_table
+INSERT OVERWRITE TABLE seq_table SELECT *
+INSERT OVERWRITE TABLE rc_table SELECT *
+INSERT OVERWRITE TABLE prq_table SELECT *
+INSERT OVERWRITE TABLE orc_table SELECT *;
+
+-------------------------------------------------------------------------------------------------------
+Comparing sizes of loaded tables after compression (RC Files and Sequence Files are benefited the most)
+-------------------------------------------------------------------------------------------------------
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/text_table;
+-rw-r--r--   1 root hdfs   21593504 2016-08-25 11:12 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/text_table/ratings.dat
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/orc_table;
+-rw-r--r--   1 root hdfs    4135847 2016-08-25 11:22 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/orc_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/seq_table;
+-rw-r--r--   1 root hdfs   10910048 2016-08-25 11:22 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/seq_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/rc_table;
+-rw-r--r--   1 root hdfs    6352282 2016-08-25 11:22 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/rc_table/000000_0
+
+dfs -ls hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/prq_table;
+-rw-r--r--   1 root hdfs    5941753 2016-08-25 11:22 hdfs://sandbox.hortonworks.com:8020/apps/hive/warehouse/prq_table/000000_0

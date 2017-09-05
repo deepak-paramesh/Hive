@@ -1,0 +1,7 @@
+############# Use Hortonworks VM ########################################
+SELECT * from users TABLESAMPLE(BUCKET 3 OUT OF 10 ON rand()) s;
+SELECT * from users TABLESAMPLE(BUCKET 3 OUT OF 10 ON rand()) s;
+
+SELECT * from users TABLESAMPLE(BUCKET 2 OUT OF 4 ON name) s;
+
+SELECT * FROM buck_users TABLESAMPLE(BUCKET 1 OUT OF 2 ON id) s LIMIT 1;

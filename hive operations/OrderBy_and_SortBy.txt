@@ -1,0 +1,10 @@
+############# Use Hortonworks VM ########################################
+
+SET hive.mapred.mode=nostrict; --default is nostrict
+SELECT * FROM users ORDER BY name ASC;
+SELECT * FROM users SORT BY name ASC;
+
+The two queries look almost identical, but if more than one reducer is invoked, the output will be sorted differently.
+
+set mapred.reduce.tasks=2;
+SELECT * FROM users SORT BY name ASC;

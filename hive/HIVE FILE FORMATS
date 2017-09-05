@@ -1,0 +1,76 @@
+============Text file==================
+
+1. Creating table
+
+CREATE TABLE AVIATION(year int, month int, flight_no int, org string, dest string, distance int, cancelled int, cancellation_code string, diverted int, dep_delay string)
+
+ row format delimited 
+
+fields terminated by ','
+
+stored as textfile;
+
+2. Loading data
+
+=================================================================================================
+
+============RC file Without compression ==================
+
+
+1. Creating table :
+
+CREATE TABLE AVIATION_RC(year int, month int, flight_no int, org string, dest string, distance int, cancelled int, cancellation_code string, diverted int, dep_delay string)
+
+ row format delimited 
+
+fields terminated by ','
+
+stored as rcfile;
+
+2. Loading from another existing table:
+
+INSERT OVERWRITE TABLE AVIATION_RC_COMPRESSION 
+    > SELECT * FROM AVIATION;
+
+
+========================================================================================
+
+
+============RC file With compression ==================
+
+
+To store with compression we need to set following properties:
+
+
+
+CREATE TABLE AVIATION_RC_COMPRESSION(year int, month int, flight_no int, org string, dest string, distance int, cancelled int, cancellation_code string, diverted int, dep_delay string)
+
+ row format delimited 
+
+fields terminated by '\t'
+
+stored as rcfile;
+
+
+Inserting into AVIATION_RC_COMPRESSION :
+
+INSERT OVERWRITE TABLE AVIATION_RC_COMPRESSION 
+  SELECT * FROM AVIATION;
+
+
+=====================================================================================
+
+
+================ORC file=======================
+
+CREATE TABLE AVIATION_ORC(year int, month int, flight_no int, org string, dest string, distance int, cancelled int, cancellation_code string, diverted int, dep_delay string)
+
+ row format delimited 
+
+fields terminated by ','
+
+stored as orcfile;
+
+
+INSERT OVERWRITE TABLE AVIATION_ORC 
+    SELECT * FROM AVIATION;

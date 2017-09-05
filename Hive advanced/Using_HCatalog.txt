@@ -1,0 +1,8 @@
+################################# Use Hortonworks SandBox ################################
+pig -useHCatalog
+
+A = LOAD 'sample_07' USING org.apache.hive.hcatalog.pig.HCatLoader();
+
+B = filter A by salary >= 40000;
+
+STORE B INTO 'hcatalog_table' USING org.apache.hive.hcatalog.pig.HCatStorer();

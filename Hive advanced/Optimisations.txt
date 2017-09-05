@@ -1,0 +1,35 @@
+===============================================================
+COST BASED OPTIMISATION
+===============================================================
+analyze table orc_orig compute statistics;
+analyze table orc_orig compute statistics for columns c1, c2;
+select max(c1) from orc_orig;
+
+set hive.cbo.enable=true;
+set hive.compute.query.using.stats=true;
+set hive.stats.fetch.column.stats=true;
+set hive.stats.fetch.partition.stats=true;
+
+select max(c1) from orc_orig;
+
+===============================================================
+VECTORISATION
+===============================================================
+
+EXPLAIN select max(c1) from orc_orig;
+
+set hive.vectorized.execution.enabled = true;
+set hive.vectorized.execution.reduce.enabled = true;
+
+EXPLAIN select max(c1) from orc_orig;
+"Execution mode: vectorized"
+
+====================================================
+TUNE CONFIGURATIONS
+====================================================
+To increase number of mapper , reduce split size :  
+select max(c1) from orc_orig;
+--number of mappers = 1
+SET mapred.max.split.size=1000000; (1 MB)
+select max(c1) from orc_orig;
+--number of mappers = 3

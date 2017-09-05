@@ -1,0 +1,67 @@
+############# Use AcadGild VM ########################################
+
+----------------------------------------------------------------------
+CREATING emp_details TABLE
+----------------------------------------------------------------------
+create table emp_details
+(
+emp_name string,
+unit string,
+exp int,
+location string
+)
+row format delimited
+fields terminated by ',';
+
+----------------------------------------------------------------------
+LOADING emp_details TABLE
+----------------------------------------------------------------------
+
+load data local inpath '/home/acadgild/hive/emp_details.txt'
+into table emp_details;
+
+describe formatted emp_details;
+
+dfs -ls hdfs://localhost:9000/user/hive/warehouse/emp_details;
+
+----------------------------------------------------------------------
+CREATING emp_details_partitioned TABLE
+----------------------------------------------------------------------
+
+create table emp_details_partitioned
+(
+emp_name string,
+unit string,
+exp int
+)
+partitioned by (location string);
+
+
+----------------------------------------------------------------------
+LOADING emp_details_partitioned TABLE with Static Partitions
+----------------------------------------------------------------------
+insert overwrite table emp_details_partitioned
+partition(location = 'BBSR')
+select emp_name, unit, exp from emp_details
+where location = 'BBSR';
+
+
+
+----------------------------------------------------------------------
+LOADING emp_details_partitioned TABLE with Dynamic Partitions
+----------------------------------------------------------------------
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+insert overwrite table emp_details_partitioned
+partition (location)
+select * from emp_details;
+
+select count(*) from emp_details where location='BBSR';
+
+select count(*) from emp_details where name='Aditya';
+
+----------------------------------------------------------------------
+DROPIING PARTITIONS FROM emp_details_partitioned TABLE
+----------------------------------------------------------------------
+
+alter table emp_details_partitioned drop partition(location='BBSR');

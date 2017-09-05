@@ -1,0 +1,8 @@
+ADD JAR <jar_file_path>;
+
+--ADD JAR /home/acadgild/hive/hive-udf.jar;
+
+
+CREATE TEMPORARY FUNCTION <symbolic_name> as '<full_class_name>';
+
+--CREATE TEMPORARY FUNCTION up AS 'udf.ToUpper';

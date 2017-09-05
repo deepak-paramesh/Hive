@@ -1,0 +1,49 @@
+-----------------------------
+CREATE TABLE WITH RegexSerDe
+-----------------------------
+CREATE TABLE userlog(
+ host string,
+ user_name string,
+ domain string
+ )
+ ROW FORMAT SERDE
+ 'org.apache.hadoop.hive.contrib.serde2.RegexSerDe'
+ WITH SERDEPROPERTIES(
+ 'input.regex' = '(.*)/(.*)@(.*)',
+ 'output.format.string' = '%1$s %2$s %3$s');
+
+
+-----------------------------
+DECODING the CREATE statement
+-----------------------------
+
+ 'input.regex' = '(.*)/(.*)@(.*)',
+ -- The pattern on which data is matched
+ 
+ 'output.format.string' = '%1$s %2$s %3$s');
+ -- The output display format
+
+-----------------------------
+Sample File (regex_file.txt)
+-----------------------------
+
+host1/amit@gmail
+host2/sumit@facebook
+host3/raghav@gmail
+host4/rohit@gmail
+
+-----------------------------
+LOAD DATA
+-----------------------------
+
+LOAD DATA LOCAL INPATH 'regex_file.txt'
+INTO TABLE userlog;
+
+-----------------------------
+FETCH DATA
+-----------------------------
+
+SELECT * FROM userlog;
+
+SELECT host, user_name FROM userlog;
+

@@ -1,0 +1,11 @@
+Buckets and partitioning
+
+Aviation data analysis
+
+Bookmark analysis
+
+Youtube
+
+Hive for json data
+
+SerDe
